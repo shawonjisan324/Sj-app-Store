@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial; background:#eef2f7; padding:15px; }
+    input, button { padding:10px; margin:6px 0; width:100%; }
+    .card {
+      background:white;
+      padding:10px;
+      margin:10px 0;
+      border-radius:8px;
+    }
+    img {
+      width:100%;
+      max-height:150px;
+      object-fit:cover;
+      border-radius:6px;
+    }
+    .addbtn { background:#198754; color:white; border:none; }
+    .delbtn { background:#dc3545; color:white; border:none; }
+  </style>
+</head>
+<body>
+
+<h2>🔐 Admin Login</h2>
+<input type="password" id="pass" placeholder="Admin Password">
+<button onclick="login()">Login</button>
+
+<div id="panel" style="display:none;">
+  <h3>Add Product</h3>
+  <input id="name" placeholder="Product Name">
+  <input id="desc" placeholder="Description">
+  <input id="price" placeholder="Price">
+  <input type="file" id="img" accept="image/*">
+  <button class="addbtn" onclick="addProduct()">Add Product</button>
+
+  <h3>All Products</h3>
+  <div id="list"></div>
+</div>
+
+<script>
+const ADMIN_PASS = "12345"; // 🔴 change password
+
+function login() {
+  if (document.getElementById("pass").value === ADMIN_PASS) {
+    document.getElementById("panel").style.display = "block";
+    showProducts();
+  } else {
+    alert("Wrong Password");
+  }
+}
+
+function getProducts() {
+  return JSON.parse(localStorage.getItem("products")) || [];
+}
+
+function saveProducts(p) {
+  localStorage.setItem("products", JSON.stringify(p));
+  showProducts();
+}
+
+function addProduct() {
+  const name = document.getElementById("name").value.trim();
+  const desc = document.getElementById("desc").value.trim();
+  const price = document.getElementById("price").value.trim();
+  const imgInput = document.getElementById("img");
+
+  if (!name || !desc || !price || imgInput.files.length === 0) {
+    alert("সব field পূরণ করুন");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function () {
+    const products = getProducts();
+    products.push({
+      name: name,
+      desc: desc,
+      price: price,
+      img: reader.result
+    });
+    saveProducts(products);
+
+    alert("✅ Product Added");
+
+    document.getElementById("name").value = "";
+    document.getElementById("desc").value = "";
+    document.getElementById("price").value = "";
+    imgInput.value = "";
+  };
+  reader.readAsDataURL(imgInput.files[0]);
+}
+
+function deleteProduct(i) {
+  const products = getProducts();
+  products.splice(i, 1);
+  saveProducts(products);
+}
+
+function showProducts() {
+  const products = getProducts();
+  let html = "";
+
+  products.forEach((p, i) => {
+    html += `
+      <div class="card">
+        <img src="${p.img}">
+        <b>${p.name}</b><br>
+        ৳ ${p.price}<br><br>
+        <button class="delbtn" onclick="deleteProduct(${i})">Delete</button>
+      </div>
+    `;
+  });
+
+  document.getElementById("list").innerHTML = html;
+}
+</script>
+
+</body>
+</html>
+✅ 2️⃣ index.html (Buyer Page – FULL REPLACEMENT)
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Online Shop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial; background:#f2f2f2; margin:0; }
+    h2 { text-align:center; padding:15px; }
+    .products {
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+    .card {
+      background:#fff;
+      width:250px;
+      margin:10px;
+      padding:10px;
+      border-radius:8px;
+      text-align:center;
+    }
+    img {
+      width:100%;
+      height:180px;
+      object-fit:cover;
+      border-radius:8px;
+    }
+    button {
+      background:#0d6efd;
+      color:white;
+      border:none;
+      padding:8px 15px;
+      border-radius:5px;
+      cursor:pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h2>🛒 Our Products</h2>
+<div class="products" id="products"></div>
+
+<script>
+const products = JSON.parse(localStorage.getItem("products")) || [];
+let html = "";
+
+products.forEach(p => {
+  html += `
+    <div class="card">
+      <img src="${p.img}">
+      <h3>${p.name}</h3>
+      <p>${p.desc}</p>
+      <b>৳ ${p.price}</b><br><br>
+      <button>Buy Now</button>
+    </div>
+  `;
+});
+
+document.getElementById("products").innerHTML = html;
+</script>
+
+</body>
+</html>

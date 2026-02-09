@@ -1,60 +1,172 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>My Online Shop</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <title>SJ App Store</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
-    body { font-family: Arial; background:#f2f2f2; margin:0; }
-    h2 { text-align:center; padding:15px; }
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f5f7fb;
+      color: #333;
+    }
+
+    header {
+      background: linear-gradient(135deg, #0d6efd, #084298);
+      color: #fff;
+      padding: 25px 15px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    header p {
+      margin-top: 6px;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+    }
+
     .products {
-      display:flex;
-      flex-wrap:wrap;
-      justify-content:center;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
     }
+
     .card {
-      background:#fff;
-      width:250px;
-      margin:10px;
-      padding:10px;
-      border-radius:8px;
-      text-align:center;
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      transition: transform 0.25s ease;
     }
-    img {
-      width:100%;
-      height:180px;
-      object-fit:cover;
-      border-radius:8px;
+
+    .card:hover {
+      transform: translateY(-5px);
     }
-    button {
-      background:#0d6efd;
-      color:white;
-      border:none;
-      padding:8px 15px;
-      border-radius:5px;
-      cursor:pointer;
+
+    .card img {
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+    }
+
+    .card-body {
+      padding: 15px;
+      text-align: center;
+    }
+
+    .card-body h3 {
+      margin: 8px 0;
+      font-size: 18px;
+    }
+
+    .card-body p {
+      font-size: 14px;
+      color: #666;
+      min-height: 40px;
+    }
+
+    .price {
+      font-size: 20px;
+      color: #0d6efd;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .buy-btn {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 12px 20px;
+      background: #25d366;
+      color: #fff;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.2s ease;
+    }
+
+    .buy-btn:hover {
+      background: #1ebe5d;
+    }
+
+    .pay-info {
+      font-size: 12px;
+      color: #777;
+      margin-top: 8px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 13px;
+      color: #777;
     }
   </style>
 </head>
+
 <body>
 
-<h2>🛒 Our Products</h2>
-<div class="products" id="products"></div>
+<header>
+  <h1>SJ App Store</h1>
+  <p>Secure Digital Products • Instant Delivery</p>
+</header>
+
+<div class="container">
+  <div class="products" id="products"></div>
+</div>
+
+<footer>
+  © 2026 SJ App Store • Pay via bKash / Nagad
+</footer>
 
 <script>
+const WHATSAPP_NUMBER = "8801784095464";
+const BKASH = "01784095464";
+const NAGAD = "01784095464";
+
 const products = JSON.parse(localStorage.getItem("products")) || [];
 let html = "";
 
 products.forEach(p => {
+  const message =
+`Hello, I want to buy this product.
+
+Product: ${p.name}
+Price: ৳${p.price}
+
+Payment Method:
+bKash: ${BKASH}
+Nagad: ${NAGAD}
+
+Please confirm my order.`;
+
+  const url = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(message);
+
   html += `
     <div class="card">
       <img src="${p.img}">
-      <h3>${p.name}</h3>
-      <p>${p.desc}</p>
-      <b>৳ ${p.price}</b><br><br>
-      <a href="https://wa.me/8801784095464?text=I%20want%20to%20buy%20this%20product:%20${encodeURIComponent(p.name)}%20Price:%20৳${encodeURIComponent(p.price)}"
-         target="_blank">
-        <button>Buy Now</button>
-      </a>
+      <div class="card-body">
+        <h3>${p.name}</h3>
+        <p>${p.desc}</p>
+        <div class="price">৳ ${p.price}</div>
+        <a class="buy-btn" href="${url}" target="_blank">Buy on WhatsApp</a>
+        <div class="pay-info">bKash / Nagad accepted</div>
+      </div>
     </div>
   `;
 });
